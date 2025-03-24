@@ -12,9 +12,10 @@ df_list = []
 for file in gw_files:
     print(f"Loading {file}...")
     try:
-        df = pd.read_csv(file)
+        # Use 'latin1' encoding to handle the problematic bytes
+        df = pd.read_csv(file, encoding='latin1')
         df_list.append(df)
-    except pd.errors.ParserError as e:
+    except Exception as e:
         print(f"Error in file {file}: {e}")
         break  # Stop at the problematic file
 
