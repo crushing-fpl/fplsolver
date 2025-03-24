@@ -153,3 +153,31 @@ Each step below includes everything we need to tackle it: objectives, tasks, too
 - **Potential Challenges**: Overfitting to history.
 - **Learning Resources**:
   - [Backtesting Strategies](https://towardsdatascience.com/backtesting-trading-strategies-with-python-8d79b9e3b753)
+
+---
+
+### notes from Step 1:
+## Data Sources
+
+### Current Season Data
+- **Source**: Official Fantasy Premier League (FPL) API.
+- **Files**:  
+  - Player data: `data/fpl_players_raw.csv`  
+  - Team data: `data/fpl_teams_raw.csv`  
+  - Player history (gameweek-by-gameweek): `data/fpl_player_history.csv` (if collected)  
+- **Notes**: Data for the 2024-25 season is updated dynamically as new gameweeks are played. As of now, it includes up to Gameweek 28.
+
+### Historical Data
+- **Source**: [vaastav/Fantasy-Premier-League](https://github.com/vaastav/Fantasy-Premier-League).  
+- **Seasons Included**: 2020-21, 2021-22, 2022-23, 2023-24, 2024-25 (ongoing).  
+- **Files**:  
+  - Per season: `data/historical/<season>/gws/merged_gw.csv`  
+  - Combined: `data/combined_historical_gw.csv`  
+- **Additional Data**: Includes Understat metrics (e.g., xG, xA) integrated into `merged_gw.csv` files.
+
+### Limitations
+- **Missing Columns**: Some metrics (e.g., `expected_assists`, `starts`) are absent in older seasons (2020-21, 2021-22) as they were introduced later by the FPL API.  
+- **Ongoing Season**: The 2024-25 season data currently goes up to GW28. GW29 and beyond will be added as the season progresses.
+
+### Updates
+- Current-season data will be refreshed after each gameweek (e.g., GW30 starting Saturday).
