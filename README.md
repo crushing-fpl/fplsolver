@@ -156,8 +156,8 @@ Each step below includes everything we need to tackle it: objectives, tasks, too
 
 ---
 
-### notes from Step 1:
-## Data Sources
+### notes from finished steps:
+## Step 1: Data Sources
 
 ### Current Season Data
 - **Source**: Official Fantasy Premier League (FPL) API.
@@ -181,3 +181,27 @@ Each step below includes everything we need to tackle it: objectives, tasks, too
 
 ### Updates
 - Current-season data will be refreshed after each gameweek (e.g., GW30 starting Saturday).
+
+
+#### Step 2: Data Preprocessing
+
+The raw FPL historical gameweek data was cleaned and standardized for analysis. Key tasks included:
+
+- **Handled missing values**: Missing data in performance columns (e.g., `minutes`, `goals_scored`, `assists`, `expected_goals`) were filled with 0, reflecting no participation or unavailable metrics in certain gameweeks or seasons.
+- **Standardized data types**:
+  - Numerical columns (e.g., `minutes`, `goals_scored`, `team_id`) set to integers.
+  - Categorical columns (e.g., `position`, `team`, `season`) set to strings.
+  - `kickoff_time` converted to datetime format.
+- **Created a derived column**: A simplified `total_points` column was calculated for rough estimates (official `total_points` used for precision).
+- **Removed duplicates**: Dropped duplicates based on `element` (player ID), `season`, and `GW` (gameweek) for unique records.
+- **Mapped team IDs**: Team IDs linked to names per season to handle promotion/relegation changes.
+- **Checked for outliers** (on `data/preprocessed_historical_gw_zeroed.csv`):
+  - No impossible values found (e.g., negative minutes, goals, assists, or xG).
+  - 15,601 statistical outliers in `total_points` identified via IQR method, but these align with valid high-scoring performances (e.g., 4-10 points).
+  - 34,043 rows with `minutes > 0` and `total_points == 0` reviewed; these are plausible for players (e.g., defenders or goalkeepers) in games without positive contributions.
+
+The final preprocessed dataset is saved as `data/preprocessed_historical_gw_zeroed.csv`.
+
+##### Notes
+- The dataset includes Understat metrics (e.g., `expected_goals`, `expected_assists`), so no additional merging is needed.
+- Outliers and suspicious rows are consistent with FPL scoring patterns, requiring no corrections.
