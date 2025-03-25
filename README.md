@@ -205,3 +205,57 @@ The final preprocessed dataset is saved as `data/preprocessed_historical_gw_zero
 ##### Notes
 - The dataset includes Understat metrics (e.g., `expected_goals`, `expected_assists`), so no additional merging is needed.
 - Outliers and suspicious rows are consistent with FPL scoring patterns, requiring no corrections.
+
+
+## Step 3: Feature Engineering (Completed)
+
+- **Overview**:  
+  The `feature_engineering.py` script enhances the preprocessed FPL dataset by adding engineered features to capture player form, team performance, opponent strength, and more for machine learning.
+
+- **Input**:  
+  - `data/preprocessed_historical_gw_zeroed.csv`: Preprocessed gameweek data.
+
+- **Output**:  
+  - `data/feature_engineered_data.csv`: Original data plus new features, saved in the `data/` folder.
+
+- **Key Features Added**:  
+  1. **Player Rolling Metrics**:  
+     - `player_points_ewma`: Exponentially weighted moving average of player points.  
+  2. **Team Performance Metrics**:  
+     - `team_goals_scored_per_game`  
+     - `team_goals_conceded_per_game`  
+     - `team_win_streak`  
+     - `team_points`  
+  3. **Opponent Strength Metrics**:  
+     - `opponent_xgc_per_game`: Expected goals conceded by the opponent.  
+  4. **Fixture Difficulty**:  
+     - `fixture_difficulty`: Based on opponent strength.  
+  5. **Position Indicators**:  
+     - One-hot encoded position flags (e.g., `pos_GK`, `pos_DEF`).  
+  6. **Interaction Features**:  
+     - `form_vs_opponent`  
+     - `goal_involvement_rate`  
+  7. **Time-Based Features**:  
+     - `player_points_season_avg`  
+     - `form_trend`  
+  8. **Differential Features**:  
+     - `points_vs_avg`  
+  9. **Additional Features**:  
+     - `is_home`  
+     - `clean_sheet_prob`  
+
+- **Usage**:  
+  1. Ensure `data/preprocessed_historical_gw_zeroed.csv` exists.  
+  2. Run `%run feature_engineering.py` in a Python environment.  
+  3. The script checks for duplicates, adds features, and saves the output.  
+
+- **Dependencies**:  
+  - `pandas`  
+  - `numpy`  
+
+- **Example Output**:  
+  ```bash
+  Duplicates in original data: 0
+  Removed 0 duplicate rows based on ['season', 'GW', 'element']
+  Duplicates after feature engineering: 0
+  Feature engineered data saved to data/feature_engineered_data.csv
