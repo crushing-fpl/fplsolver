@@ -21,6 +21,7 @@ def add_features(df):
         [3, 1],
         default=0
     )
+
     team_df = team_df.sort_values(['season', 'team', 'GW'])
 
     team_df['team_goals_scored_last_5'] = team_df.groupby(['season', 'team'])['team_score'].transform(
@@ -32,7 +33,6 @@ def add_features(df):
     team_df['team_win_streak'] = team_df.groupby(['season', 'team'])['team_points'].transform(
         lambda x: x.shift(1).rolling(3, min_periods=1).sum()
     )
-    # Add team_form_momentum in team_df
     team_df['team_form_momentum'] = (
         team_df.groupby(['season', 'team'])['team_score'].transform(
             lambda x: x.shift(1).rolling(3, min_periods=1).mean()
@@ -86,28 +86,13 @@ def add_features(df):
         )
 
     # --- Recommended Features ---
-    # Opponent Strength: Average goals conceded by opponent over last 5 games
     df['opponent_strength'] = df.groupby(['season', 'opponent_team'])['opponent_goals_conceded_last_5'].transform('mean')
-    # Interaction Term: Player's recent goals vs. fixture difficulty
     df['goals_vs_difficulty'] = df['goals_scored_last_3'] * df['fixture_difficulty']
 
     # --- Performance Boosters ---
-    # 1. Player Consistency: Standard deviation of points over last 5 games
     df['player_consistency'] = df.groupby('element')['total_points'].transform(
         lambda x: x.shift(1).rolling(5, min_periods=1).std()
     )
-    # debug
-    # print("Columns in df:", df.columns.tolist())
-    # print("'minutes' in df:", 'minutes' in df.columns)
-    # print("'element' in df:", 'element' in df.columns)
-    # print("'team_score' in df:", 'team_score' in df.columns)
-    # # 2. Team Form Momentum: Difference in goals scored over last 3 vs. last 5
-    # df['team_form_momentum'] = (
-    #     df.groupby(['season', 'team'])['team_score'].transform(
-    #         lambda x: x.shift(1).rolling(3, min_periods=1).mean()
-    #     ) - df['team_goals_scored_last_5']
-    # )
-    # 3. Recent Bonus Points Trend: Bonus points over last 3 games
     df['bonus_last_3'] = df.groupby('element')['bonus'].transform(
         lambda x: x.shift(1).rolling(3, min_periods=1).mean()
     )
@@ -121,6 +106,18 @@ def add_features(df):
     # --- Differential Features ---
     df['points_vs_avg'] = df['total_points'] - df['player_points_season_avg']
 
+    # Experimental Features
+    # Longer History: 10-game averages
+    df['goals_scored_last_10'] = df.groupby('element')['goals_scored'].transform(
+        lambda x: x.shift(1).rolling(10, min_periods=1).mean()
+    )
+    df['assists_last_10'] = df.groupby('element')['assists_x'].transform(
+        lambda x: x.shift(1).rolling(10, min_periods=1).mean()
+    )
+
+    # Injury Risk: Flag if minutes in last 3 games are below 60
+    df['low_minutes_flag'] = (df['minutes_last_3'] < 60).astype(int)
+
     # --- Categorical Encoding ---
     position_dummies = pd.get_dummies(df['position'], prefix='pos')
     df = pd.concat([df, position_dummies], axis=1)
@@ -132,14 +129,17 @@ def add_features(df):
                   'opponent_goals_conceded_last_5', 'player_points_ewma', 'fixture_difficulty', 
                   'goal_involvement_rate', 'form_vs_opponent', 'form_trend', 'points_vs_avg',
                   'opponent_strength', 'goals_vs_difficulty', 'player_consistency', 
-                  'team_form_momentum', 'bonus_last_3']  # Updated with new features
+                  'team_form_momentum', 'bonus_last_3']
     for col in scale_cols:
         if col in df.columns:
             df[col] = (df[col] - df[col].mean()) / df[col].std()
 
     # Fill any remaining NaNs with 0
     df = df.fillna(0)
-    
+
+    # Drop 'modified' if it exists before returning
+    df = df.drop('modified', axis=1, errors='ignore')
+
     return df
 
 # Load the data

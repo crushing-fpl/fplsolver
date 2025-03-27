@@ -259,3 +259,26 @@ The final preprocessed dataset is saved as `data/preprocessed_historical_gw_zero
   Removed 0 duplicate rows based on ['season', 'GW', 'element']
   Duplicates after feature engineering: 0
   Feature engineered data saved to data/feature_engineered_data.csv
+
+
+# Hybrid of steps 4, 5, 6 and 7 (incomplete through)
+# Fantasy Premier League Team Selection Model
+
+## Overview
+This project focuses on creating a model to select an optimal Fantasy Premier League (FPL) team, maximizing predicted points while respecting game constraints like budget (£100M), positions, and team limits.
+
+## Key Developments
+- **Data Preparation**: Aggregated and cleaned player data from GW30 to GW38, ensuring data integrity for modeling.
+- **Feature Engineering**: Developed the `value_metric` (predicted points per million) to prioritize cost-effective players.
+- **Model Development**: Built a heuristic-based model to select a 15-player squad, adhering to FPL rules.
+- **Squad Selection Optimization**: Refined the selection process in three phases, addressing budget and constraint issues with dynamic checks.
+
+## Current Capabilities
+- Constructs a full 15-player squad within the £100M budget.
+- Balances high-value players (e.g., Salah, Haaland) with cost-effective picks.
+- Calculates total predicted points and assigns a captain based on the highest predicted scorer.
+
+## Limitations
+- Relies on heuristics rather than advanced predictive modeling.
+- Lacks strategic planning for transfers and chips across multiple gameweeks.
+- Has not been formally evaluated with metrics like R² or RMSE.
